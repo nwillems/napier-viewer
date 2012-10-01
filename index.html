@@ -72,8 +72,13 @@ function loadFile(){
 function processLines(data){
     var lines = data.split('\n');
     var result = new Array();
-    for(var i = 0; i < lines.length-1; i++) //Last line doesn't count
-        result.push(JSON.parse(lines[i]));
+    for(var i = 0; i < lines.length-1; i++){ //Last line doesn't count
+        try{
+            result.push(JSON.parse(lines[i]));
+        }catch(err){
+            console.log(err, "i", i,"line", lines[i]);
+        }
+    }
 
     return result;
 }
@@ -81,7 +86,7 @@ function displayData(start, end){
     var tbody = $('#logtable > tbody');
     var i = start;
     for(; i < end && i < objs.length; i++)
-        tbody.append(mkTableRow(objs[i]));
+            tbody.append(mkTableRow(objs[i]));
 
     shownItems += i;
 }
