@@ -1,0 +1,20 @@
+{
+  "name": "logviewer",
+  "version": "0.0.1",
+  "description": "A logviewer for JSON files",
+  "main": "server.js",
+  "dependencies": {
+    "node-static": "~0.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nwillems/napier-viewer.git"
+  },
+  "author": "Nicolai Willems",
+  "license": "MIT"
+}
