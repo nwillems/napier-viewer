@@ -4,7 +4,7 @@
   "description": "A logviewer for JSON files",
   "main": "server.js",
   "dependencies": {
-    "node-static": "~0.6.2"
+    "ecstatic": "~0.1.6"
   },
   "devDependencies": {},
   "scripts": {
