@@ -82,15 +82,15 @@ function deleteTemplateField(e){
     //Delete the field
     // Maybe update model
     console.log("Deleting template field", e);
-    $(e.delegateTarget).remove();
+    $(e.currentTarget).parent().parent().parent().remove();
     fixupTemplateFields();
 }
 
 function moveTemplateFieldUp(e){
     //Move it you SOAB
     console.log("Moving template field up", e);
-    var row = $(e.delegateTarget);
-    var above = $(e.delegateTarget.previousElementSibling);
+    var row = $(e.currentTarget).parent().parent().parent();
+    var above = $(row[0].previousElementSibling);
     row.detach();
     above.before(row);
 
@@ -100,8 +100,8 @@ function moveTemplateFieldUp(e){
 function moveTemplateFieldDown(e){
     console.log("Moving template field down", e);
 //    nextElementSibling
-    var row = $(e.delegateTarget);
-    var below = $(e.delegateTarget.nextElementSibling);
+    var row = $(e.currentTarget).parent().parent().parent();
+    var below = $(row[0].nextElementSibling);
     row.detach();
     below.after(row);
 
@@ -163,6 +163,87 @@ function createTableFromTemplate(){
    fixupTemplateFields();
 }
 
+function appendTemplateTableRow(){
+        var row = $('<tr>');
+        var head_td = $('<td>');
+            var head_input = $('<input>');
+            head_input.attr("name", "header"); 
+            head_input.attr("type", "text"); 
+            head_input.addClass("input-medium");
+            
+            head_td.append(head_input);
+        row.append(head_td);
+
+        var selector_td = $('<td>');
+        var selector_div = $('<div>'); selector_div.addClass('input-prepend');
+            selector_div.append('<span class="add-on">obj.</span> ');
+            
+            var selector_input = $("<input>");
+            selector_input.attr("name", "selector"); 
+            selector_input.attr("type", "text"); 
+            selector_input.addClass("input-medium");
+
+            selector_div.append(selector_input);
+
+            selector_td.append(selector_div);
+        row.append(selector_td);
+        row.append('<td>Not implemented</td>');
+
+        //Make buttons
+        var btns = $('<td>');
+        var btngroup = $('<div>');
+        btngroup.addClass('btn-group');
+
+        btns.append(btngroup);
+        //Delete button
+        var delbtn = $('<button>'); delbtn.addClass('btn btn-small btn-delete');
+        delbtn.append('<i class="icon-remove"></i> ');
+
+        btngroup.append(delbtn);
+        //Up button
+        var upbtn = $('<button>'); upbtn.addClass('btn btn-small btn-up');
+        upbtn.append('<i class="icon-arrow-up"></i> ');
+
+        btngroup.append(upbtn);
+        //Down button
+        var downbtn = $('<button>'); downbtn.addClass('btn btn-small btn-down');
+        downbtn.append('<i class="icon-arrow-down"></i> ');
+
+        btngroup.append(downbtn);
+
+        row.append(btns);
+
+        selector_input.focusout(function(e){
+            //Make input fields into normal text
+            console.log("Lost focus", e);
+            var value = $(e.currentTarget).val();
+            $(e.currentTarget).parent().parent().html(value);
+        });
+        head_input.focusout(function(e){
+            var value = $(e.currentTarget).val();
+            $(e.currentTarget).parent().html(value);
+        });
+
+        $('#fields > tbody').append(row);
+
+        fixupTemplateFields();
+    }
+
+function saveTemplate(){
+    console.log("BEFORE", table_template);
+    table_template = new Array();
+    $('#fields > tbody tr').each(function(index, value){
+        var name = $('td:nth-child(1)', value).text();
+        var selector = $('td:nth-child(2)', value).text();
+
+        table_template.push({"head": name, "selector": selector});
+    });
+
+    console.log("AFTER", table_template);
+
+    createTableFromTemplate();
+    $('#fieldchose').modal('hide')
+}
 
 $(document).ready(function(){
     function load(){ loadFile(); return false; }
@@ -196,55 +277,12 @@ $(document).ready(function(){
     createTableFromTemplate();
 
     var foos = $('#fields > tbody button');
-    $('#fields > tbody > tr').on('click', 'button.btn-delete', deleteTemplateField);
-    $('#fields > tbody > tr').on('click', 'button.btn-up', moveTemplateFieldUp);
-    $('#fields > tbody > tr').on('click', 'button.btn-down', moveTemplateFieldDown);
+    $('#fields > tbody').on('click', 'tr button.btn-delete', deleteTemplateField);
+    $('#fields > tbody').on('click', 'tr button.btn-up', moveTemplateFieldUp);
+    $('#fields > tbody').on('click', 'tr button.btn-down', moveTemplateFieldDown);
 
-    $('#addtemplatefield').click(function(){
-        var row = $('<tr>');
-        row.append('<td><input type="text" name="header" class="input-medium" /></td>');
-        var td = $('<td>');
-        var div = $('<div>'); div.addClass('input-prepend');
-            div.append('<span class="add-on">obj.</span> ');
-            div.append('<input type="text" name="selector"  class="input-medium" />');
-
-            td.append(div);
-        row.append(td);
-        row.append('<td>Not implemented</td>');
-
-        //Make buttons
-        var btns = $('<td>');
-        var btngroup = $('<div>');
-        btngroup.addClass('btn-group');
-
-        btns.append(btngroup);
-        //Delete button
-        var delbtn = $('<button>'); delbtn.addClass('btn btn-small btn-delete');
-        delbtn.append('<i class="icon-remove"></i> ');
-
-        btngroup.append(delbtn);
-        //Up button
-        var upbtn = $('<button>'); upbtn.addClass('btn btn-small btn-up');
-        upbtn.append('<i class="icon-arrow-up"></i> ');
-
-        btngroup.append(upbtn);
-        //Down button
-        var downbtn = $('<button>'); downbtn.addClass('btn btn-small btn-down');
-        downbtn.append('<i class="icon-arrow-down"></i> ');
-
-        btngroup.append(downbtn);
-
-        row.append(btns);
-
-
-        $('#fields > tbody').append(row);
-
-        row.on('click', 'button.del-btn', deleteTemplateField);
-        row.on('click', 'button.down-btn', moveTemplateFieldDown);
-        row.on('click', 'button.up-btn', moveTemplateFieldUp);
-        
-        fixupTemplateFields();
-    });
+    $('#addtemplatefield').click(appendTemplateTableRow);
+    $('#saveTemplate').click(saveTemplate);
     var debug = "JOHN";
 });
 
