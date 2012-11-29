@@ -1,4 +1,5 @@
 var objs = [];
+var filtered = [];
 var editor = {};
 var shownItems = 0;
 
@@ -25,7 +26,7 @@ function loadFile(){
         url: $('#logfile').val(),
         dataType: 'text',
         success: function(data){
-            objs = processLines(data);
+            processLines(data);
             shownItems = 0;
             displayData(0, 50);
         }
@@ -38,26 +39,25 @@ function loadFile(){
 
 //Return array
 function processLines(data){
-    var lines = data.split('\n');
-    var result = new Array();
-    for(var i = 0; i < lines.length-1; i++){ //Last line doesn't count
-        try{
-            result.push(JSON.parse(lines[i]));
-        }catch(err){
-            console.log(err, "i", i,"line", lines[i]);
-        }
-    }
+    var lines = data.split('\n')
+    lines = lines.slice(0, lines.length-1);
+    objs = lines.map(function(line){ return JSON.parse(line); });
 
-    return result;
+    fnFilter = new Function("obj", editor.getValue());
+    filtered = objs.filter(fnFilter);
+
+    $("#orgNumLines").text(objs.length.toString());
+    $("#filtNumLines").text(filtered.length.toString());
 }
 function displayData(start, end){
     var tbody = $('#logtable > tbody');
     var i = start;
-    for(; i < end && i < objs.length; i++)
-            tbody.append(mkTableRow(objs[i]));
+    for(; i < end && i < filtered.length; i++)
+            tbody.append(mkTableRow(filtered[i]));
 
     shownItems += i;
 }
+
 //Returns jQuery tr object
 function mkTableRow(obj){
     var info_row = $('<tr>');
@@ -284,7 +284,7 @@ $(document).ready(function(){
     var elm = document.getElementById('filters-code');
 
     editor = CodeMirror.fromTextArea(elm, {
-        value: "function filter(obj){\n    return true;\n}\n",
+        value: "{ return true; }",
         mode : "javascript",
         lineNumbers: true,
         tabSize: 4,
