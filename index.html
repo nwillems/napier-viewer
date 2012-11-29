@@ -3,9 +3,24 @@
 <head>
     <title>LogViewer for bunyan JSON</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="js/codemirror/lib/codemirror.css" rel="stylesheet" />
 <style type="text/css">
 #logtable-container {
     padding: 0 20px;
+}
+.CodeMirror {
+    border: 1px solid #EEE; 
+    font-size:13px;
+    width: 80%;
+}
+.CodeMirror-scroll {
+    overflow: auto;
+    height: 100px;
+}
+.tab-content {
+    max-height: 300px;
+    overflow-y: scroll;
+    padding-right: 30px;
 }
 </style>
 </head>
@@ -20,7 +35,53 @@
     </div>
 </form>
 </div></div>
+<!-- START:CONFIGURATION -->
 <div class="row-fluid">
+    <div class="span10 offset1">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#fields" data-toggle="tab">Fields</a></li>
+            <li><a href="#filters" data-toggle="tab">Filters</a></li>
+            <li style="float: right;">
+                <a href="#empty" data-toggle="tab">Collapse</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="fields">
+                <table id="fields" class="table table-striped">
+                    <thead><tr>
+                        <th>Field header</th>
+                        <th>Field selector</th>
+                        <th>Field example</th>
+                        <th>Action</th>
+                    </tr></thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td>
+                                <button id="addtemplatefield" class="btn btn-success">Add field</button>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button id="saveTemplate" class="btn btn-primary">Save</button>
+            </div>
+            <div class="tab-pane" id="filters">
+<form><textarea id="filters-code" name="filters-code">
+function filter(obj){
+    return true;
+}
+</textarea><br />
+                <button id="applyFilter" class="btn btn-success">Apply filter</button>
+</form>
+            </div>
+            <div class="tab-pane" id="empty">&nbsp;</div>
+        </div>
+    </div>
+</div>
+<!-- END:CONFIGURATION -->
+<!--<div class="row-fluid">
     <div class="span10 offset1">
     <div class="btn-toolbar">
         <div class="btn-group">
@@ -33,13 +94,13 @@
         </div>
     </div>
     </div>
-</div>
-
+</div>-->
+<br />
 <div class="row-fluid">
 <div class="span12" id="logtable-container">
 <table id="logtable" class="table table-bordered"><thead>
     <tr>
-        <th>_</th>
+        <th></th>
         <th>Name</th>
         <th>Time</th>
         <th>PID</th>
@@ -56,7 +117,7 @@
 </div></div>
 </div>
 
-<div class="modal hide fade" id="fieldchose" style="width: 700px;">
+<!-- <div class="modal hide fade" id="fieldchose" style="width: 700px;">
     <div class="modal-header">
         <button class="close" data-dismiss="modal">&times;</button>
         <h3>Chose the fields for table</h3>
@@ -86,11 +147,13 @@
     <div class="modal-footer">
         <button id="saveTemplate" class="btn btn-primary">Save</button>
     </div>
-</div>
+</div>-->
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="js/jquery.tinysort.min.js"></script>
+<script src="js/codemirror/lib/codemirror.js"></script>
+<script src="js/codemirror/mode/javascript/javascript.js"></script>
 <script src="js/index.js"></script>
 </body>
 </html>
