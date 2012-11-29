@@ -1,12 +1,11 @@
 var objs = [];
+var editor = {};
 var shownItems = 0;
 
 var table_template = [
       { head: "Time", selector: "time" }
     , { head: "Name", selector: "name" }
-    , { head: "PID", selector: "pid"}
     , { head: "Component", selector: "component"}
-    , { head: "Level", selector: "level"}
     , { head: "Message", selector: "msg"}
 ];
 
@@ -122,7 +121,7 @@ function createTableFromTemplate(){
     var logtable_tableheader_row = $('#logtable > thead > tr');
     logtable_tableheader_row.html('');
 
-    logtable_tableheader_row.append('<th>_</th>');
+    logtable_tableheader_row.append('<th></th>');
 
     table_template.forEach(function(value, index){
         var trow = $('<tr>');
@@ -239,8 +238,6 @@ function saveTemplate(){
         table_template.push({"head": name, "selector": selector});
     });
 
-    console.log("AFTER", table_template);
-
     createTableFromTemplate();
     $('#fieldchose').modal('hide')
 }
@@ -283,6 +280,19 @@ $(document).ready(function(){
 
     $('#addtemplatefield').click(appendTemplateTableRow);
     $('#saveTemplate').click(saveTemplate);
+
+    var elm = document.getElementById('filters-code');
+
+    editor = CodeMirror.fromTextArea(elm, {
+        value: "function filter(obj){\n    return true;\n}\n",
+        mode : "javascript",
+        lineNumbers: true,
+        tabSize: 4,
+        indentUnit: 4
+    });
+    editor.setOption("theme", "default");
+    editor.refresh();
+
     var debug = "JOHN";
 });
 
