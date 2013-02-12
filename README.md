@@ -7,4 +7,4 @@ WORK IN PROGRESS
 
 ## FIXED
 * Custom fields shown(Header => data.field)(PullRequest #1)
-* * Filtering
+* Filtering
