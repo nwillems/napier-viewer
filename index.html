@@ -39,14 +39,14 @@
 <div class="row-fluid">
     <div class="span10 offset1">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#fields" data-toggle="tab">Fields</a></li>
-            <li><a href="#filters" data-toggle="tab">Filters</a></li>
+            <li><a href="#fields" data-toggle="tab">Fields</a></li>
+            <li class="active"><a href="#filters" data-toggle="tab">Filters</a></li>
             <li style="float: right;">
                 <a href="#empty" data-toggle="tab">Collapse</a>
             </li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane active" id="fields">
+            <div class="tab-pane" id="fields">
                 <table id="fields" class="table table-striped">
                     <thead><tr>
                         <th>Field header</th>
@@ -67,12 +67,12 @@
                 </table>
                 <button id="saveTemplate" class="btn btn-primary">Save</button>
             </div>
-            <div class="tab-pane" id="filters">
+            <div class="tab-pane active" id="filters">
+            It is important that the function is called filter
 <form><textarea id="filters-code" name="filters-code">
 function filter(obj){
     return true;
-}
-</textarea><br />
+}</textarea><br />
                 <button id="applyFilter" class="btn btn-success">Apply filter</button>
 </form>
             </div>

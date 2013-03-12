@@ -1,6 +1,8 @@
 var objs = [];
+var filtered = [];
 var editor = {};
 var shownItems = 0;
+var filterFun = function(obj){ return true; };
 
 var table_template = [
       { head: "Time", selector: "time" }
@@ -26,14 +28,18 @@ function loadFile(){
         dataType: 'text',
         success: function(data){
             objs = processLines(data);
-            shownItems = 0;
-            displayData(0, 50);
+            resetData(objs);
         }
     });
-    objs = [];
+}
+
+//Received new data
+function resetData(data){
     $('#logtable > tbody').html('');
-    $('#configure').removeClass('disabled');
-    //Make some loading logic
+
+    filtered = doFiltering(data);
+    shownItems = 0;
+    displayData(0, 50);
 }
 
 //Return array
@@ -50,13 +56,21 @@ function processLines(data){
 
     return result;
 }
+function doFiltering(data){
+    var res = [];
+    data.forEach(function(elm, index){
+        if(filterFun(elm))
+            res.push(index);
+    });
+    return res;
+}
 function displayData(start, end){
     var tbody = $('#logtable > tbody');
     var i = start;
-    for(; i < end && i < objs.length; i++)
-            tbody.append(mkTableRow(objs[i]));
+    for(; i < end && i < filtered.length; i++)
+        tbody.append(mkTableRow(objs[filtered[i]]));
 
-    shownItems += i;
+    shownItems = i;
 }
 //Returns jQuery tr object
 function mkTableRow(obj){
@@ -98,7 +112,6 @@ function moveTemplateFieldUp(e){
 
 function moveTemplateFieldDown(e){
     console.log("Moving template field down", e);
-//    nextElementSibling
     var row = $(e.currentTarget).parent().parent().parent();
     var below = $(row[0].nextElementSibling);
     row.detach();
@@ -163,70 +176,70 @@ function createTableFromTemplate(){
 }
 
 function appendTemplateTableRow(){
-        var row = $('<tr>');
-        var head_td = $('<td>');
-            var head_input = $('<input>');
-            head_input.attr("name", "header"); 
-            head_input.attr("type", "text"); 
-            head_input.addClass("input-medium");
+    var row = $('<tr>');
+    var head_td = $('<td>');
+    var head_input = $('<input>');
+    head_input.attr("name", "header"); 
+    head_input.attr("type", "text"); 
+    head_input.addClass("input-medium");
             
-            head_td.append(head_input);
-        row.append(head_td);
+    head_td.append(head_input);
+    row.append(head_td);
 
-        var selector_td = $('<td>');
-        var selector_div = $('<div>'); selector_div.addClass('input-prepend');
-            selector_div.append('<span class="add-on">obj.</span> ');
+    var selector_td = $('<td>');
+    var selector_div = $('<div>'); selector_div.addClass('input-prepend');
+    selector_div.append('<span class="add-on">obj.</span> ');
             
-            var selector_input = $("<input>");
-            selector_input.attr("name", "selector"); 
-            selector_input.attr("type", "text"); 
-            selector_input.addClass("input-medium");
+    var selector_input = $("<input>");
+    selector_input.attr("name", "selector"); 
+    selector_input.attr("type", "text"); 
+    selector_input.addClass("input-medium");
 
-            selector_div.append(selector_input);
+    selector_div.append(selector_input);
 
-            selector_td.append(selector_div);
-        row.append(selector_td);
-        row.append('<td>Not implemented</td>');
+    selector_td.append(selector_div);
+    row.append(selector_td);
+    row.append('<td>Not implemented</td>');
 
-        //Make buttons
-        var btns = $('<td>');
-        var btngroup = $('<div>');
-        btngroup.addClass('btn-group');
+    //Make buttons
+    var btns = $('<td>');
+    var btngroup = $('<div>');
+    btngroup.addClass('btn-group');
 
-        btns.append(btngroup);
-        //Delete button
-        var delbtn = $('<button>'); delbtn.addClass('btn btn-small btn-delete');
-        delbtn.append('<i class="icon-remove"></i> ');
+    btns.append(btngroup);
+    //Delete button
+    var delbtn = $('<button>'); delbtn.addClass('btn btn-small btn-delete');
+    delbtn.append('<i class="icon-remove"></i> ');
 
-        btngroup.append(delbtn);
-        //Up button
-        var upbtn = $('<button>'); upbtn.addClass('btn btn-small btn-up');
-        upbtn.append('<i class="icon-arrow-up"></i> ');
+    btngroup.append(delbtn);
+    //Up button
+    var upbtn = $('<button>'); upbtn.addClass('btn btn-small btn-up');
+    upbtn.append('<i class="icon-arrow-up"></i> ');
 
-        btngroup.append(upbtn);
-        //Down button
-        var downbtn = $('<button>'); downbtn.addClass('btn btn-small btn-down');
-        downbtn.append('<i class="icon-arrow-down"></i> ');
+    btngroup.append(upbtn);
+    //Down button
+    var downbtn = $('<button>'); downbtn.addClass('btn btn-small btn-down');
+    downbtn.append('<i class="icon-arrow-down"></i> ');
 
-        btngroup.append(downbtn);
+    btngroup.append(downbtn);
 
-        row.append(btns);
+    row.append(btns);
 
-        selector_input.focusout(function(e){
-            //Make input fields into normal text
-            console.log("Lost focus", e);
-            var value = $(e.currentTarget).val();
-            $(e.currentTarget).parent().parent().html(value);
-        });
-        head_input.focusout(function(e){
-            var value = $(e.currentTarget).val();
-            $(e.currentTarget).parent().html(value);
-        });
+    selector_input.focusout(function(e){
+        //Make input fields into normal text
+        console.log("Lost focus", e);
+        var value = $(e.currentTarget).val();
+        $(e.currentTarget).parent().parent().html(value);
+    });
+    head_input.focusout(function(e){
+        var value = $(e.currentTarget).val();
+        $(e.currentTarget).parent().html(value);
+    });
 
-        $('#fields > tbody').append(row);
+    $('#fields > tbody').append(row);
 
-        fixupTemplateFields();
-    }
+    fixupTemplateFields();
+}
 
 function saveTemplate(){
     console.log("BEFORE", table_template);
@@ -240,6 +253,16 @@ function saveTemplate(){
 
     createTableFromTemplate();
     $('#fieldchose').modal('hide')
+}
+
+function applyFilter(){
+    //create filterFun
+      //Get filter-texteditors content
+    var fnSource = editor.getValue();
+    filterFun = new Function("obj", fnSource+";\nreturn filter(obj);");
+    
+    resetData(objs)
+    return false;
 }
 
 $(document).ready(function(){
@@ -280,6 +303,7 @@ $(document).ready(function(){
 
     $('#addtemplatefield').click(appendTemplateTableRow);
     $('#saveTemplate').click(saveTemplate);
+    $('#applyFilter').click(applyFilter);
 
     var elm = document.getElementById('filters-code');
 
